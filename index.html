@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
         rel="stylesheet">
     <style>
         *,
@@ -22,15 +22,25 @@
         }
 
         :root {
-            --bg: #0b0b0b;
-            --bg-grid: #141414;
-            --ink: #f2f2f0;
-            --muted: #9a9a94;
-            --panel: rgba(255, 255, 255, 0.035);
-            --panel-border: rgba(255, 255, 255, 0.09);
-            --accent: #76b900;
-            --accent-glow: rgba(118, 185, 0, 0.35);
-            --accent-dim: rgba(118, 185, 0, 0.12);
+            /* Liquid Glass — iOS 26 inspired token system */
+            --bg: #eef1f6;
+            --ink: #1c1c1e;
+            --muted: #6b6b72;
+
+            --glass-fill: rgba(255, 255, 255, 0.42);
+            --glass-fill-strong: rgba(255, 255, 255, 0.62);
+            --glass-border: rgba(255, 255, 255, 0.75);
+            --glass-shadow: 0 8px 32px rgba(31, 41, 74, 0.10), 0 1.5px 0 rgba(255, 255, 255, 0.6) inset, 0 -1px 0 rgba(31,41,74,0.05) inset;
+
+            --hue-a: #0a84ff;   /* iOS blue   */
+            --hue-b: #5e5ce6;   /* indigo     */
+            --hue-c: #ff2d92;   /* pink       */
+            --hue-d: #30d158;   /* mint green */
+            --hue-e: #ff9f0a;   /* amber      */
+
+            --accent: #0a84ff;
+            --accent-2: #5e5ce6;
+            --accent-glow: rgba(10, 132, 255, 0.35);
         }
 
         html {
@@ -43,23 +53,109 @@
             font-family: 'Inter', sans-serif;
             font-size: 16px;
             line-height: 1.6;
-            font-weight: 300;
+            font-weight: 400;
             position: relative;
+            overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
+        /* Ambient liquid light field — the "material" behind the glass */
+        .liquid-field {
             position: fixed;
             inset: 0;
-            z-index: -1;
+            z-index: -2;
+            overflow: hidden;
             pointer-events: none;
-            background: radial-gradient(ellipse 900px 500px at 20% -5%, var(--accent-dim), transparent 60%),
-                radial-gradient(ellipse 700px 500px at 100% 20%, rgba(118, 185, 0, 0.06), transparent 60%);
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.55;
+            will-change: transform;
+        }
+
+        .blob.b1 {
+            width: 620px;
+            height: 620px;
+            top: -220px;
+            left: -180px;
+            background: radial-gradient(circle at 30% 30%, var(--hue-a), transparent 70%);
+            animation: drift1 26s ease-in-out infinite;
+        }
+
+        .blob.b2 {
+            width: 560px;
+            height: 560px;
+            top: 10%;
+            right: -220px;
+            background: radial-gradient(circle at 60% 40%, var(--hue-c), transparent 70%);
+            animation: drift2 32s ease-in-out infinite;
+        }
+
+        .blob.b3 {
+            width: 500px;
+            height: 500px;
+            bottom: -180px;
+            left: 12%;
+            background: radial-gradient(circle at 50% 50%, var(--hue-d), transparent 70%);
+            animation: drift3 30s ease-in-out infinite;
+        }
+
+        .blob.b4 {
+            width: 460px;
+            height: 460px;
+            bottom: -120px;
+            right: 8%;
+            background: radial-gradient(circle at 40% 60%, var(--hue-e), transparent 70%);
+            animation: drift1 24s ease-in-out infinite reverse;
+        }
+
+        @keyframes drift1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(60px, 40px) scale(1.08);
+            }
+        }
+
+        @keyframes drift2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-50px, 60px) scale(1.05);
+            }
+        }
+
+        @keyframes drift3 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(40px, -50px) scale(1.1);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .blob {
+                animation: none !important;
+            }
         }
 
         ::selection {
             background: var(--accent);
-            color: #0b0b0b;
+            color: #fff;
         }
 
         a {
@@ -85,10 +181,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1.1rem 3rem;
-            background: rgba(11, 11, 11, 0.72);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--panel-border);
+            padding: 1rem 3rem;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 8px 24px rgba(31, 41, 74, 0.05);
         }
 
         .nav-logo {
@@ -101,31 +199,44 @@
 
         .nav-logo::after {
             content: '●';
-            color: var(--accent);
-            font-size: .5rem;
+            background: linear-gradient(135deg, var(--hue-a), var(--hue-c));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: .6rem;
             vertical-align: middle;
             margin-left: 6px;
         }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: .4rem;
             list-style: none;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            padding: .35rem;
+            border-radius: 100px;
+            backdrop-filter: blur(10px);
         }
 
         .nav-links a {
             text-decoration: none;
             font-family: 'JetBrains Mono';
-            font-size: .72rem;
+            font-size: .68rem;
             font-weight: 500;
-            letter-spacing: .08em;
+            letter-spacing: .06em;
             text-transform: uppercase;
             color: var(--muted);
-            transition: color .2s;
+            transition: all .25s;
+            padding: .5rem .9rem;
+            border-radius: 100px;
+            display: inline-block;
         }
 
         .nav-links a:hover {
-            color: var(--accent);
+            color: var(--ink);
+            background: rgba(255, 255, 255, 0.75);
+            box-shadow: 0 2px 8px rgba(31, 41, 74, 0.08);
         }
 
         .container {
@@ -138,19 +249,21 @@
             padding: 6.5rem 0;
         }
 
-        /* glass card base */
+        /* glass card base — the core liquid glass material */
         .glass {
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
-            transition: border-color .25s, box-shadow .25s, transform .25s;
+            background: var(--glass-fill);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            box-shadow: var(--glass-shadow);
+            transition: border-color .3s, box-shadow .3s, transform .3s, background .3s;
         }
 
         .glass:hover {
-            border-color: rgba(118, 185, 0, 0.45);
-            box-shadow: 0 0 0 1px rgba(118, 185, 0, 0.15), 0 8px 30px rgba(118, 185, 0, 0.08);
-            transform: translateY(-2px);
+            background: var(--glass-fill-strong);
+            box-shadow: 0 16px 40px rgba(31, 41, 74, 0.14), 0 1.5px 0 rgba(255, 255, 255, 0.75) inset;
+            transform: translateY(-3px);
         }
 
         /* HERO */
@@ -170,14 +283,14 @@
             font-size: .72rem;
             letter-spacing: .1em;
             text-transform: uppercase;
-            border: 1px solid rgba(118, 185, 0, 0.4);
-            color: var(--accent);
-            background: rgba(118, 185, 0, 0.12);
-            backdrop-filter: blur(18px) saturate(160%);
-            -webkit-backdrop-filter: blur(18px) saturate(160%);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 14px rgba(0, 0, 0, 0.3);
+            color: var(--accent-2);
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 14px rgba(31, 41, 74, 0.08);
             display: inline-block;
-            padding: .45rem 1.1rem;
+            padding: .5rem 1.2rem;
             border-radius: 100px;
             margin-bottom: 1.8rem;
             position: relative;
@@ -189,6 +302,10 @@
             letter-spacing: -.03em;
             font-size: clamp(3rem, 7vw, 5.2rem);
             line-height: 1.0;
+            background: linear-gradient(115deg, var(--ink) 40%, var(--accent-2) 90%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .hero-role {
@@ -196,6 +313,7 @@
             font-size: .95rem;
             margin-top: 1.3rem;
             color: var(--accent);
+            font-weight: 600;
         }
 
         .hero-loc {
@@ -207,10 +325,6 @@
 
         .hero-side {
             padding: 1.8rem;
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
         }
 
         .hero-status {
@@ -226,11 +340,11 @@
         }
 
         .rdot {
-            width: 8px;
-            height: 8px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
+            background: radial-gradient(circle at 30% 30%, #6fdc8c, var(--hue-d));
+            box-shadow: 0 0 12px var(--hue-d);
             flex-shrink: 0;
             animation: pulse 2s infinite;
         }
@@ -252,7 +366,7 @@
             color: var(--muted);
             line-height: 1.7;
             margin-bottom: 1.6rem;
-            font-weight: 300;
+            font-weight: 400;
         }
 
         .stat-row {
@@ -264,25 +378,14 @@
 
         .stat {
             padding: 1.1rem 1.2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 14px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 14px rgba(31, 41, 74, 0.06);
             position: relative;
             overflow: hidden;
-        }
-
-        .stat::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 55%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 100%);
-            pointer-events: none;
         }
 
         .stat-num {
@@ -290,7 +393,10 @@
             font-weight: 700;
             font-size: 2rem;
             line-height: 1;
-            color: var(--accent);
+            background: linear-gradient(120deg, var(--hue-a), var(--hue-b));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .stat-lab {
@@ -314,53 +420,42 @@
             font-size: .75rem;
             text-transform: uppercase;
             letter-spacing: .06em;
-            padding: .9rem 1.7rem;
+            padding: .95rem 1.8rem;
             text-decoration: none;
-            border-radius: 18px;
-            transition: all .2s;
+            border-radius: 100px;
+            transition: all .25s;
             border: 1px solid transparent;
             position: relative;
             overflow: hidden;
+            display: inline-block;
         }
 
         .btn-primary {
-            background: var(--accent);
-            color: #0b0b0b;
+            background: linear-gradient(135deg, var(--hue-a), var(--hue-b));
+            color: #fff;
             font-weight: 600;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 24px rgba(118, 185, 0, 0.3);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 24px rgba(10, 132, 255, 0.35);
         }
 
         .btn-primary:hover {
-            background: #8ad700;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 32px rgba(118, 185, 0, 0.45);
-            transform: translateY(-1px);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 10px 30px rgba(10, 132, 255, 0.5);
+            transform: translateY(-2px);
         }
 
         .btn-outline {
-            border-color: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.85);
             color: var(--ink);
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(18px) saturate(160%);
-            -webkit-backdrop-filter: blur(18px) saturate(160%);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 14px rgba(0, 0, 0, 0.35);
-        }
-
-        .btn-outline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 55%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 100%);
-            pointer-events: none;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 14px rgba(31, 41, 74, 0.08);
         }
 
         .btn-outline:hover {
             border-color: var(--accent);
             color: var(--accent);
-            background: rgba(118, 185, 0, 0.1);
-            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.65);
+            transform: translateY(-2px);
         }
 
         .links-row {
@@ -412,17 +507,6 @@
 
         .skill-card {
             padding: 1.5rem;
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
-            transition: border-color .25s, box-shadow .25s, transform .25s;
-        }
-
-        .skill-card:hover {
-            border-color: rgba(118, 185, 0, 0.45);
-            box-shadow: 0 0 0 1px rgba(118, 185, 0, 0.15), 0 8px 30px rgba(118, 185, 0, 0.08);
-            transform: translateY(-2px);
         }
 
         .skill-card h3 {
@@ -444,40 +528,30 @@
         .chip {
             font-family: 'JetBrains Mono';
             font-size: .68rem;
-            padding: .45rem .8rem;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: 14px;
+            padding: .5rem .9rem;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            border-radius: 100px;
             color: var(--ink);
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(18px) saturate(160%);
-            -webkit-backdrop-filter: blur(18px) saturate(160%);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 4px 14px rgba(0, 0, 0, 0.35);
-            transition: all .2s;
+            background: rgba(255, 255, 255, 0.42);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 10px rgba(31, 41, 74, 0.05);
+            transition: all .25s;
             position: relative;
             overflow: hidden;
         }
 
-        .chip::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 55%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 100%);
-            pointer-events: none;
-        }
-
         .chip:hover {
             border-color: var(--accent-glow);
-            background: rgba(118, 185, 0, 0.1);
+            background: rgba(255, 255, 255, 0.7);
             transform: translateY(-1px);
         }
 
         .chip.on {
-            background: rgba(118, 185, 0, 0.16);
-            border-color: rgba(118, 185, 0, 0.45);
-            color: var(--accent);
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.22), rgba(94, 92, 230, 0.22));
+            border-color: rgba(10, 132, 255, 0.4);
+            color: var(--accent-2);
+            font-weight: 600;
         }
 
         /* PROJECTS */
@@ -487,17 +561,6 @@
             grid-template-columns: 150px 1fr;
             gap: 1.8rem;
             margin-bottom: 1.1rem;
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
-            transition: border-color .25s, box-shadow .25s, transform .25s;
-        }
-
-        .proj:hover {
-            border-color: rgba(118, 185, 0, 0.45);
-            box-shadow: 0 0 0 1px rgba(118, 185, 0, 0.15), 0 8px 30px rgba(118, 185, 0, 0.08);
-            transform: translateY(-2px);
         }
 
         .proj-tag {
@@ -518,11 +581,11 @@
             display: inline-block;
             margin-left: .5rem;
             font-size: .62rem;
-            padding: .2rem .55rem;
-            border: 1px solid rgba(118, 185, 0, 0.4);
-            color: var(--accent);
+            padding: .25rem .6rem;
+            border: 1px solid rgba(48, 209, 88, 0.5);
+            color: #1c8a3c;
             border-radius: 100px;
-            background: rgba(118, 185, 0, 0.14);
+            background: rgba(48, 209, 88, 0.16);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
         }
@@ -540,7 +603,7 @@
             margin-bottom: 0;
             max-width: 68ch;
             line-height: 1.65;
-            font-weight: 300;
+            font-weight: 400;
         }
 
         /* EXPERIENCE */
@@ -550,17 +613,6 @@
             grid-template-columns: 190px 1fr;
             gap: 1.8rem;
             margin-bottom: 1.1rem;
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
-            transition: border-color .25s, box-shadow .25s, transform .25s;
-        }
-
-        .exp:hover {
-            border-color: rgba(118, 185, 0, 0.45);
-            box-shadow: 0 0 0 1px rgba(118, 185, 0, 0.15), 0 8px 30px rgba(118, 185, 0, 0.08);
-            transform: translateY(-2px);
         }
 
         .exp-period {
@@ -595,7 +647,7 @@
             padding-left: 1.1rem;
             position: relative;
             line-height: 1.6;
-            font-weight: 300;
+            font-weight: 400;
         }
 
         .exp li::before {
@@ -616,16 +668,6 @@
 
         .edu-card {
             padding: 1.5rem;
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
-            transition: border-color .25s, transform .25s;
-        }
-
-        .edu-card:hover {
-            border-color: rgba(118, 185, 0, 0.45);
-            transform: translateY(-2px);
         }
 
         .edu-card h3 {
@@ -645,7 +687,10 @@
             font-family: 'Space Grotesk';
             font-weight: 700;
             font-size: 1.7rem;
-            color: var(--accent);
+            background: linear-gradient(120deg, var(--hue-a), var(--hue-b));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .edu-card .score-lab {
@@ -662,12 +707,15 @@
         }
 
         .cert {
-            border: 1px solid var(--panel-border);
-            background: var(--panel);
-            padding: .65rem .95rem;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            padding: .7rem 1rem;
             font-family: 'JetBrains Mono';
             font-size: .72rem;
-            border-radius: 14px;
+            border-radius: 18px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 12px rgba(31, 41, 74, 0.05);
         }
 
         .cert b {
@@ -699,22 +747,21 @@
             color: var(--muted);
             margin-bottom: 2rem;
             max-width: 46ch;
-            font-weight: 300;
+            font-weight: 400;
         }
 
         .clist a {
             display: flex;
             justify-content: space-between;
-            padding: 1rem 1.2rem;
-            border-bottom: 1px solid var(--panel-border);
+            padding: 1.05rem 1.3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
             text-decoration: none;
             font-size: .9rem;
-            transition: all .2s;
-            border-radius: 14px;
+            transition: all .25s;
         }
 
         .clist a:hover {
-            background: var(--accent-dim);
+            background: rgba(10, 132, 255, 0.1);
             color: var(--accent);
         }
 
@@ -728,22 +775,16 @@
 
         .open-panel {
             padding: 1.8rem;
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
         }
 
         .clist {
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 22px;
-            backdrop-filter: blur(10px);
+            background: var(--glass-fill);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            box-shadow: var(--glass-shadow);
             overflow: hidden;
-        }
-
-        .clist a {
-            border-radius: 0;
         }
 
         .clist a:last-child {
@@ -757,7 +798,8 @@
             letter-spacing: .08em;
             margin-bottom: 1rem;
             display: block;
-            color: var(--accent);
+            color: var(--accent-2);
+            font-weight: 700;
         }
 
         .open-panel p {
@@ -765,7 +807,7 @@
             font-size: .85rem;
             margin-bottom: 1.3rem;
             line-height: 1.6;
-            font-weight: 300;
+            font-weight: 400;
         }
 
         footer {
@@ -777,7 +819,7 @@
             color: var(--muted);
             flex-wrap: wrap;
             gap: .5rem;
-            border-top: 1px solid var(--panel-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         @media(max-width:900px) {
@@ -813,40 +855,48 @@
             }
         }
 
-        .hero-side,
-        .skill-card,
-        .proj,
-        .exp,
-        .edu-card,
-        .open-panel,
-        .clist {
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 20px 40px -20px rgba(0, 0, 0, 0.6);
-        }
-
+        /* Specular top highlight — the glossy "liquid" sheen shared by all glass panels */
         .hero-side::before,
         .skill-card::before,
         .proj::before,
         .exp::before,
         .edu-card::before,
         .open-panel::before,
-        .clist::before {
+        .clist::before,
+        .stat::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 50%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 100%);
             pointer-events: none;
+            border-radius: inherit;
+        }
+
+        .hero-side,
+        .skill-card,
+        .proj,
+        .exp,
+        .edu-card,
+        .open-panel,
+        .clist,
+        .stat {
+            position: relative;
+            overflow: hidden;
         }
     </style>
 </head>
 
-</head>
-
 <body>
+
+    <div class="liquid-field" aria-hidden="true">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+        <div class="blob b3"></div>
+        <div class="blob b4"></div>
+    </div>
 
     <nav>
         <a href="#hero" class="nav-logo">NNR</a>
@@ -878,7 +928,7 @@
                     <a href="https://linkedin.com/in/raja-gopal-833145295" target="_blank" rel="noopener">LinkedIn</a>
                 </div>
             </div>
-            <div class="hero-side">
+            <div class="hero-side glass">
                 <div class="hero-status"><span class="rdot"></span>Currently deploying hospital AMRs — Spotless AI
                     Robotics</div>
                 <p class="hero-desc">Robotics and Automation undergraduate with hands-on experience designing,
@@ -921,7 +971,7 @@
                 <div class="sidx">02</div>
             </div>
             <div class="skill-grid">
-                <div class="skill-card">
+                <div class="skill-card glass">
                     <h3>ROS / Navigation</h3>
                     <div class="chip-row">
                         <span class="chip on">ROS2 Humble</span><span class="chip on">Nav2</span><span
@@ -931,7 +981,7 @@
                             class="chip">gmapping</span><span class="chip">cartographer</span>
                     </div>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card glass">
                     <h3>Simulation</h3>
                     <div class="chip-row">
                         <span class="chip on">Gazebo Classic</span><span class="chip on">Gazebo Harmonic</span>
@@ -939,7 +989,7 @@
                             bridge</span>
                     </div>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card glass">
                     <h3>Programming &amp; CV</h3>
                     <div class="chip-row">
                         <span class="chip on">Python</span><span class="chip on">OpenCV</span><span
@@ -950,7 +1000,7 @@
                             class="chip">Keras</span>
                     </div>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card glass">
                     <h3>Embedded Systems</h3>
                     <div class="chip-row">
                         <span class="chip on">Raspberry Pi</span><span class="chip">Jetson</span><span
@@ -960,7 +1010,7 @@
                             class="chip">ESP32</span><span class="chip">PlatformIO</span>
                     </div>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card glass">
                     <h3>Mechanical Design</h3>
                     <div class="chip-row">
                         <span class="chip on">SolidWorks</span><span class="chip on">Fusion 360</span>
@@ -968,7 +1018,7 @@
                             class="chip">Component modeling</span>
                     </div>
                 </div>
-                <div class="skill-card">
+                <div class="skill-card glass">
                     <h3>DevOps / Tools</h3>
                     <div class="chip-row">
                         <span class="chip">Linux / Ubuntu</span><span class="chip">Git / GitHub</span><span
@@ -988,7 +1038,7 @@
                 <div class="sidx">03</div>
             </div>
 
-            <div class="proj">
+            <div class="proj glass">
                 <div class="proj-tag pri">ROS2 — Primary</div>
                 <div>
                     <h3>Café Butler Robot</h3>
@@ -998,7 +1048,7 @@
                 </div>
             </div>
 
-            <div class="proj">
+            <div class="proj glass">
                 <div class="proj-tag">ROS2</div>
                 <div>
                     <h3>AMR — 250 kg Payload</h3>
@@ -1008,7 +1058,7 @@
                 </div>
             </div>
 
-            <div class="proj">
+            <div class="proj glass">
                 <div class="proj-tag">ROS1</div>
                 <div>
                     <h3>AMR — 20 kg Payload</h3>
@@ -1017,7 +1067,7 @@
                 </div>
             </div>
 
-            <div class="proj">
+            <div class="proj glass">
                 <div class="proj-tag">AI/ML — Computer Vision</div>
                 <div>
                     <h3>Waste Segregation — YOLOv8 + 6-DOF Arm</h3>
@@ -1027,7 +1077,7 @@
                 </div>
             </div>
 
-            <div class="proj">
+            <div class="proj glass">
                 <div class="proj-tag">AI/ML — Sensor Fusion</div>
                 <div>
                     <h3>Elephant Intrusion Detection System</h3>
@@ -1036,7 +1086,7 @@
                 </div>
             </div>
 
-            <div class="proj">
+            <div class="proj glass">
                 <div class="proj-tag">AI/ML — Smart India Hackathon</div>
                 <div>
                     <h3>Leaf Disease Detection System</h3>
@@ -1055,7 +1105,7 @@
                 <div class="sidx">04</div>
             </div>
 
-            <div class="exp">
+            <div class="exp glass">
                 <div>
                     <div class="exp-period">07/2026 — Present</div>
                     <div class="exp-org">Spotless AI Robotics — Salem</div>
@@ -1078,7 +1128,7 @@
                 </div>
             </div>
 
-            <div class="exp">
+            <div class="exp glass">
                 <div>
                     <div class="exp-period">02/2024 — 02/2025</div>
                     <div class="exp-org">Yoi Robotics LLP — Coimbatore</div>
@@ -1104,19 +1154,19 @@
                 <div class="sidx">05</div>
             </div>
             <div class="edu-grid">
-                <div class="edu-card">
+                <div class="edu-card glass">
                     <h3>Sri Ramakrishna Engineering College</h3>
                     <div class="deg">B.E. Robotics and Automation — 2023–2027</div>
                     <div class="score">8.05</div>
                     <div class="score-lab">CGPA</div>
                 </div>
-                <div class="edu-card">
+                <div class="edu-card glass">
                     <h3>Ramanathapuram Dist. Govt. Model School</h3>
                     <div class="deg">HSC (XII) — Tamil Nadu Board, Mar 2023</div>
                     <div class="score">525/600</div>
                     <div class="score-lab">Marks</div>
                 </div>
-                <div class="edu-card">
+                <div class="edu-card glass">
                     <h3>Sourashtra Matriculation HS</h3>
                     <div class="deg">SSLC (X) — Tamil Nadu Board, Mar 2021</div>
                     <div class="score">Pass</div>
@@ -1150,7 +1200,7 @@
                             class="k">LinkedIn</span><span>raja-gopal-833145295</span></a>
                 </div>
             </div>
-            <div class="open-panel">
+            <div class="open-panel glass">
                 <span class="tag">Open to Opportunities</span>
                 <p>Looking for full-time and internship roles in robotics engineering and autonomous systems. Available
                     for project collaborations, research roles, and industry internships in ROS2 or AI/ML.</p>
