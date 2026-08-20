@@ -4,6 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
     <title>N N Rajagopal — Robotics & Automation</title>
     <meta name="description"
         content="Robotics engineer specializing in ROS2, autonomous navigation, multi-robot systems, and computer vision.">
@@ -32,6 +39,14 @@
             --glass-border: rgba(255, 255, 255, 0.75);
             --glass-shadow: 0 8px 32px rgba(31, 41, 74, 0.10), 0 1.5px 0 rgba(255, 255, 255, 0.6) inset, 0 -1px 0 rgba(31,41,74,0.05) inset;
 
+            --surface: rgba(255, 255, 255, 0.42);
+            --surface-strong: rgba(255, 255, 255, 0.7);
+            --nav-bg: rgba(255, 255, 255, 0.5);
+            --nav-border: rgba(255, 255, 255, 0.6);
+            --chip-border: rgba(255, 255, 255, 0.85);
+            --sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 100%);
+            --status-fg: #1c8a3c;
+
             --hue-a: #0a84ff;   /* iOS blue   */
             --hue-b: #5e5ce6;   /* indigo     */
             --hue-c: #ff2d92;   /* pink       */
@@ -41,6 +56,31 @@
             --accent: #0a84ff;
             --accent-2: #5e5ce6;
             --accent-glow: rgba(10, 132, 255, 0.35);
+            color-scheme: light;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0b0d14;
+            --ink: #f2f4f8;
+            --muted: #9aa3b5;
+
+            --glass-fill: rgba(22, 26, 38, 0.55);
+            --glass-fill-strong: rgba(32, 38, 56, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 1.5px 0 rgba(255, 255, 255, 0.08) inset, 0 -1px 0 rgba(0, 0, 0, 0.25) inset;
+
+            --surface: rgba(255, 255, 255, 0.06);
+            --surface-strong: rgba(255, 255, 255, 0.12);
+            --nav-bg: rgba(12, 14, 22, 0.62);
+            --nav-border: rgba(255, 255, 255, 0.08);
+            --chip-border: rgba(255, 255, 255, 0.14);
+            --sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 100%);
+            --status-fg: #6fdc8c;
+
+            --accent: #64d2ff;
+            --accent-2: #bf5af2;
+            --accent-glow: rgba(100, 210, 255, 0.35);
+            color-scheme: dark;
         }
 
         html {
@@ -50,6 +90,7 @@
         body {
             background: var(--bg);
             color: var(--ink);
+            transition: background .35s ease, color .35s ease;
             font-family: 'Inter', sans-serif;
             font-size: 16px;
             line-height: 1.6;
@@ -182,11 +223,57 @@
             align-items: center;
             justify-content: space-between;
             padding: 1rem 3rem;
-            background: rgba(255, 255, 255, 0.5);
+            background: var(--nav-bg);
             backdrop-filter: blur(28px) saturate(180%);
             -webkit-backdrop-filter: blur(28px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+            border-bottom: 1px solid var(--nav-border);
             box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 8px 24px rgba(31, 41, 74, 0.05);
+        }
+
+        html[data-theme="dark"] nav {
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .nav-end {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+        }
+
+        .theme-toggle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--chip-border);
+            background: var(--surface);
+            color: var(--ink);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 4px 12px rgba(31, 41, 74, 0.08);
+            transition: transform .25s, background .25s, border-color .25s;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: var(--surface-strong);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle svg {
+            width: 18px;
+            height: 18px;
+            display: none;
+        }
+
+        html:not([data-theme="dark"]) .theme-toggle .icon-moon {
+            display: block;
+        }
+
+        html[data-theme="dark"] .theme-toggle .icon-sun {
+            display: block;
         }
 
         .nav-logo {
@@ -212,8 +299,8 @@
             display: flex;
             gap: .4rem;
             list-style: none;
-            background: rgba(255, 255, 255, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.65);
+            background: var(--surface);
+            border: 1px solid var(--chip-border);
             padding: .35rem;
             border-radius: 100px;
             backdrop-filter: blur(10px);
@@ -235,7 +322,7 @@
 
         .nav-links a:hover {
             color: var(--ink);
-            background: rgba(255, 255, 255, 0.75);
+            background: var(--surface-strong);
             box-shadow: 0 2px 8px rgba(31, 41, 74, 0.08);
         }
 
@@ -284,8 +371,8 @@
             letter-spacing: .1em;
             text-transform: uppercase;
             color: var(--accent-2);
-            background: rgba(255, 255, 255, 0.55);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: var(--surface-strong);
+            border: 1px solid var(--chip-border);
             backdrop-filter: blur(18px) saturate(180%);
             -webkit-backdrop-filter: blur(18px) saturate(180%);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 14px rgba(31, 41, 74, 0.08);
@@ -378,8 +465,8 @@
 
         .stat {
             padding: 1.1rem 1.2rem;
-            background: rgba(255, 255, 255, 0.55);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: var(--surface-strong);
+            border: 1px solid var(--chip-border);
             border-radius: 20px;
             backdrop-filter: blur(14px) saturate(180%);
             -webkit-backdrop-filter: blur(14px) saturate(180%);
@@ -443,9 +530,9 @@
         }
 
         .btn-outline {
-            border-color: rgba(255, 255, 255, 0.85);
+            border-color: var(--chip-border);
             color: var(--ink);
-            background: rgba(255, 255, 255, 0.45);
+            background: var(--surface);
             backdrop-filter: blur(18px) saturate(180%);
             -webkit-backdrop-filter: blur(18px) saturate(180%);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 14px rgba(31, 41, 74, 0.08);
@@ -454,7 +541,7 @@
         .btn-outline:hover {
             border-color: var(--accent);
             color: var(--accent);
-            background: rgba(255, 255, 255, 0.65);
+            background: var(--surface-strong);
             transform: translateY(-2px);
         }
 
@@ -529,10 +616,10 @@
             font-family: 'JetBrains Mono';
             font-size: .68rem;
             padding: .5rem .9rem;
-            border: 1px solid rgba(255, 255, 255, 0.85);
+            border: 1px solid var(--chip-border);
             border-radius: 100px;
             color: var(--ink);
-            background: rgba(255, 255, 255, 0.42);
+            background: var(--surface);
             backdrop-filter: blur(18px) saturate(180%);
             -webkit-backdrop-filter: blur(18px) saturate(180%);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 4px 10px rgba(31, 41, 74, 0.05);
@@ -543,7 +630,7 @@
 
         .chip:hover {
             border-color: var(--accent-glow);
-            background: rgba(255, 255, 255, 0.7);
+            background: var(--surface-strong);
             transform: translateY(-1px);
         }
 
@@ -583,7 +670,7 @@
             font-size: .62rem;
             padding: .25rem .6rem;
             border: 1px solid rgba(48, 209, 88, 0.5);
-            color: #1c8a3c;
+            color: var(--status-fg);
             border-radius: 100px;
             background: rgba(48, 209, 88, 0.16);
             backdrop-filter: blur(14px);
@@ -707,8 +794,8 @@
         }
 
         .cert {
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid var(--chip-border);
+            background: var(--surface);
             backdrop-filter: blur(14px) saturate(180%);
             -webkit-backdrop-filter: blur(14px) saturate(180%);
             padding: .7rem 1rem;
@@ -754,7 +841,7 @@
             display: flex;
             justify-content: space-between;
             padding: 1.05rem 1.3rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+            border-bottom: 1px solid var(--nav-border);
             text-decoration: none;
             font-size: .9rem;
             transition: all .25s;
@@ -819,7 +906,7 @@
             color: var(--muted);
             flex-wrap: wrap;
             gap: .5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            border-top: 1px solid var(--nav-border);
         }
 
         @media(max-width:900px) {
@@ -870,7 +957,7 @@
             left: 0;
             right: 0;
             height: 50%;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 100%);
+            background: var(--sheen);
             pointer-events: none;
             border-radius: inherit;
         }
@@ -900,14 +987,25 @@
 
     <nav>
         <a href="#hero" class="nav-logo">NNR</a>
-        <ul class="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#education">Education</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+        <div class="nav-end">
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button type="button" class="theme-toggle" id="themeToggle" aria-label="Switch to dark theme" title="Toggle theme">
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/>
+                </svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+                </svg>
+            </button>
+        </div>
     </nav>
 
     <section id="hero">
@@ -1218,7 +1316,27 @@
         <span>B.E. Robotics &amp; Automation — SREC — 2027</span>
     </footer>
 
-    <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+    <script>
+        document.getElementById('yr').textContent = new Date().getFullYear();
+
+        (function () {
+            var root = document.documentElement;
+            var btn = document.getElementById('themeToggle');
+            var stored = localStorage.getItem('theme');
+            var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+            function apply(next) {
+                root.setAttribute('data-theme', next);
+                btn.setAttribute('aria-label', next === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+                localStorage.setItem('theme', next);
+            }
+
+            apply(theme);
+            btn.addEventListener('click', function () {
+                apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            });
+        })();
+    </script>
 </body>
 
 </html>
