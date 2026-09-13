@@ -1862,8 +1862,17 @@
                 color: 0x0d1526, emissive: 0x22d3ee, emissiveIntensity: .85,
                 metalness: .45, roughness: .28
             });
-            const profileFrame = new THREE.Mesh(new THREE.BoxGeometry(1.54, 2.29, .14), profileFrameMat);
-            profile.add(profileFrame);
+            // Four narrow rails create an open frame, so the portrait is never
+            // hidden behind a solid backing panel.
+            const addProfileRail = (width, height, x, y) => {
+                const rail = new THREE.Mesh(new THREE.BoxGeometry(width, height, .14), profileFrameMat);
+                rail.position.set(x, y, 0);
+                profile.add(rail);
+            };
+            addProfileRail(1.54, .10, 0, 1.095);
+            addProfileRail(1.54, .10, 0, -1.095);
+            addProfileRail(.10, 2.29, -.72, 0);
+            addProfileRail(.10, 2.29, .72, 0);
 
             const profileTexture = new THREE.TextureLoader().load('professionalimage.png', (texture) => {
                 texture.colorSpace = THREE.SRGBColorSpace;
