@@ -1858,45 +1858,42 @@
             // Keep the AMR as the hero object, and let the portrait orbit it as a
             // personal, holographic identifier rather than a flat page decoration.
             const profile = new THREE.Group();
-            const profileFrameMat = new THREE.MeshStandardMaterial({
-                color: 0x0d1526, emissive: 0x22d3ee, emissiveIntensity: .85,
-                metalness: .45, roughness: .28
-            });
-            // Four narrow rails create an open frame, so the portrait is never
-            // hidden behind a solid backing panel.
-            const addProfileRail = (width, height, x, y) => {
-                const rail = new THREE.Mesh(new THREE.BoxGeometry(width, height, .14), profileFrameMat);
-                rail.position.set(x, y, 0);
-                profile.add(rail);
-            };
-            addProfileRail(1.54, .10, 0, 1.095);
-            addProfileRail(1.54, .10, 0, -1.095);
-            addProfileRail(.10, 2.29, -.72, 0);
-            addProfileRail(.10, 2.29, .72, 0);
 
-            const profileTexture = new THREE.TextureLoader().load('professionalimage.png', (texture) => {
-                texture.colorSpace = THREE.SRGBColorSpace;
-                texture.needsUpdate = true;
-            });
+            // Load the portrait and size the plane to match its real aspect
+            // ratio once it's available, so the photo is never stretched or
+            // cropped oddly. No frame/backing panel - just the photo itself,
+            // with a soft glow rim baked into the material edge via a subtle
+            // outline mesh sized exactly to the image.
             const profilePhotoMat = new THREE.MeshBasicMaterial({
-                map: profileTexture, side: THREE.DoubleSide, depthTest: false, depthWrite: false
+                transparent: true, side: THREE.DoubleSide, depthTest: false, depthWrite: false
             });
-            const profilePhoto = new THREE.Mesh(
-                new THREE.PlaneGeometry(1.38, 2.07),
-                profilePhotoMat
-            );
+            const profilePhoto = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), profilePhotoMat);
             profilePhoto.position.z = .16;
             profilePhoto.renderOrder = 10;
             profile.add(profilePhoto);
 
-            const profileEdge = new THREE.Mesh(
-                new THREE.EdgesGeometry(new THREE.PlaneGeometry(1.58, 2.33)),
-                new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: .9 })
+            const profileGlow = new THREE.Mesh(
+                new THREE.PlaneGeometry(1, 1),
+                new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: .18, depthWrite: false })
             );
-            profileEdge.position.z = .17;
-            profileEdge.renderOrder = 11;
-            profile.add(profileEdge);
-            profile.position.set(3.35, 2.35, -1.8);
+            profileGlow.position.z = .1;
+            profileGlow.renderOrder = 9;
+            profile.add(profileGlow);
+
+            const targetHeight = 2.2;
+            const profileTexture = new THREE.TextureLoader().load('professionalimage.png', (texture) => {
+                texture.colorSpace = THREE.SRGBColorSpace;
+                texture.needsUpdate = true;
+                const aspect = texture.image.width / texture.image.height;
+                const width = targetHeight * aspect;
+                profilePhoto.geometry.dispose();
+                profilePhoto.geometry = new THREE.PlaneGeometry(width, targetHeight);
+                profileGlow.geometry.dispose();
+                profileGlow.geometry = new THREE.PlaneGeometry(width + .12, targetHeight + .12);
+                profilePhotoMat.map = texture;
+                profilePhotoMat.needsUpdate = true;
+            });
+            profile.position.set(3.35, 2.2, -1.8);
             profile.scale.setScalar(1.4);
             profile.rotation.set(-.05, -.46, 0);
             scene.add(profile);
@@ -1961,8 +1958,7 @@
                 sweepMat.color.setHex(p.acc);
                 sonar.material.color.setHex(p.acc);
                 rim.color.setHex(p.acc);
-                profileFrameMat.emissive.setHex(p.acc);
-                profileEdge.material.color.setHex(p.acc);
+                profileGlow.material.color.setHex(p.acc);
                 floaters[0].material.color.setHex(p.acc2);
                 floaters[1].material.color.setHex(p.acc);
             }
