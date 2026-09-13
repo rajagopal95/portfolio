@@ -1896,7 +1896,8 @@
             profileEdge.position.z = .17;
             profileEdge.renderOrder = 11;
             profile.add(profileEdge);
-            profile.position.set(-.1, 2.35, -2.25);
+            profile.position.set(3.35, 2.35, -1.8);
+            profile.scale.setScalar(1.4);
             profile.rotation.set(-.05, -.46, 0);
             scene.add(profile);
 
@@ -1975,6 +1976,9 @@
                 robot.position.x = isWide ? 1.9 : 0;
                 robot.position.z = isWide ? 0 : -1.2;
                 robot.scale.setScalar(isWide ? 1 : .74);
+                profile.position.x = isWide ? 3.35 : 0;
+                profile.position.z = isWide ? -1.8 : -2.25;
+                profile.scale.setScalar(isWide ? 1.4 : .74);
                 profile.visible = isWide;
             }
             layout();
