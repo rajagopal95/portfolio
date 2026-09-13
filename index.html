@@ -976,7 +976,7 @@
         /* ============ EDUCATION ============ */
         .edu-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: minmax(0, 420px);
             gap: 1rem;
             margin-bottom: 1.4rem;
         }
@@ -1650,22 +1650,6 @@
                             <div class="score-lab">CGPA</div>
                         </div>
                     </div>
-                    <div class="edu-card glass card3d rv" style="--d:.08s">
-                        <div class="t3d" data-tilt>
-                            <h3>Ramanathapuram Dist. Govt. Model School</h3>
-                            <div class="deg">HSC (XII) — Tamil Nadu Board<br>Mar 2023</div>
-                            <div class="score">525/600</div>
-                            <div class="score-lab">Marks</div>
-                        </div>
-                    </div>
-                    <div class="edu-card glass card3d rv" style="--d:.14s">
-                        <div class="t3d" data-tilt>
-                            <h3>Sourashtra Matriculation HS</h3>
-                            <div class="deg">SSLC (X) — Tamil Nadu Board<br>Mar 2021</div>
-                            <div class="score">Pass</div>
-                            <div class="score-lab">Result</div>
-                        </div>
-                    </div>
                 </div>
                 <div class="cert-row rv" style="--d:.1s">
                     <div class="cert"><b>Python Programming</b><span>Infosys Springboard</span></div>
@@ -1870,6 +1854,43 @@
 
             scene.add(robot);
 
+            // ---- 3D profile card ----
+            // Keep the AMR as the hero object, and let the portrait orbit it as a
+            // personal, holographic identifier rather than a flat page decoration.
+            const profile = new THREE.Group();
+            const profileFrameMat = new THREE.MeshStandardMaterial({
+                color: 0x0d1526, emissive: 0x22d3ee, emissiveIntensity: .85,
+                metalness: .45, roughness: .28
+            });
+            const profileFrame = new THREE.Mesh(new THREE.BoxGeometry(1.54, 2.29, .14), profileFrameMat);
+            profile.add(profileFrame);
+
+            const profileTexture = new THREE.TextureLoader().load('professionalimage.png', (texture) => {
+                texture.colorSpace = THREE.SRGBColorSpace;
+                texture.needsUpdate = true;
+            });
+            const profilePhotoMat = new THREE.MeshBasicMaterial({
+                map: profileTexture, side: THREE.DoubleSide, depthTest: false, depthWrite: false
+            });
+            const profilePhoto = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.38, 2.07),
+                profilePhotoMat
+            );
+            profilePhoto.position.z = .16;
+            profilePhoto.renderOrder = 10;
+            profile.add(profilePhoto);
+
+            const profileEdge = new THREE.Mesh(
+                new THREE.EdgesGeometry(new THREE.PlaneGeometry(1.58, 2.33)),
+                new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: .9 })
+            );
+            profileEdge.position.z = .17;
+            profileEdge.renderOrder = 11;
+            profile.add(profileEdge);
+            profile.position.set(-.1, 2.35, -2.25);
+            profile.rotation.set(-.05, -.46, 0);
+            scene.add(profile);
+
             // ---- sonar pulse ring ----
             const sonar = new THREE.Mesh(
                 new THREE.RingGeometry(.97, 1, 56),
@@ -1930,6 +1951,8 @@
                 sweepMat.color.setHex(p.acc);
                 sonar.material.color.setHex(p.acc);
                 rim.color.setHex(p.acc);
+                profileFrameMat.emissive.setHex(p.acc);
+                profileEdge.material.color.setHex(p.acc);
                 floaters[0].material.color.setHex(p.acc2);
                 floaters[1].material.color.setHex(p.acc);
             }
@@ -1943,6 +1966,7 @@
                 robot.position.x = isWide ? 1.9 : 0;
                 robot.position.z = isWide ? 0 : -1.2;
                 robot.scale.setScalar(isWide ? 1 : .74);
+                profile.visible = isWide;
             }
             layout();
 
@@ -2010,6 +2034,9 @@
                 // robot rotation (auto + drag inertia)
                 rotVel += (rotTarget - rotVel) * .12;
                 robot.rotation.y = t * .22 + rotVel;
+                profile.position.y = 2.35 + Math.sin(t * .75) * .14;
+                profile.rotation.x = -.05 + Math.sin(t * .48) * .025;
+                profile.rotation.y = -.46 + Math.sin(t * .36) * .12;
 
                 for (const w of wheels) w.rotation.y -= .045;
                 sweep1.rotation.z = -t * 2.6;
