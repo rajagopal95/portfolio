@@ -1854,50 +1854,6 @@
 
             scene.add(robot);
 
-            // ---- 3D profile card ----
-            // Keep the AMR as the hero object, and let the portrait orbit it as a
-            // personal, holographic identifier rather than a flat page decoration.
-            const profile = new THREE.Group();
-
-            // Load the portrait and size the plane to match its real aspect
-            // ratio once it's available, so the photo is never stretched or
-            // cropped oddly. No frame/backing panel - just the photo itself,
-            // with a soft glow rim baked into the material edge via a subtle
-            // outline mesh sized exactly to the image.
-            const profilePhotoMat = new THREE.MeshBasicMaterial({
-                transparent: true, side: THREE.DoubleSide, depthTest: false, depthWrite: false
-            });
-            const profilePhoto = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), profilePhotoMat);
-            profilePhoto.position.z = .16;
-            profilePhoto.renderOrder = 10;
-            profile.add(profilePhoto);
-
-            const profileGlow = new THREE.Mesh(
-                new THREE.PlaneGeometry(1, 1),
-                new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: .18, depthWrite: false })
-            );
-            profileGlow.position.z = .1;
-            profileGlow.renderOrder = 9;
-            profile.add(profileGlow);
-
-            const targetHeight = 2.2;
-            const profileTexture = new THREE.TextureLoader().load('professionalimage.png', (texture) => {
-                texture.colorSpace = THREE.SRGBColorSpace;
-                texture.needsUpdate = true;
-                const aspect = texture.image.width / texture.image.height;
-                const width = targetHeight * aspect;
-                profilePhoto.geometry.dispose();
-                profilePhoto.geometry = new THREE.PlaneGeometry(width, targetHeight);
-                profileGlow.geometry.dispose();
-                profileGlow.geometry = new THREE.PlaneGeometry(width + .12, targetHeight + .12);
-                profilePhotoMat.map = texture;
-                profilePhotoMat.needsUpdate = true;
-            });
-            profile.position.set(3.35, 2.2, -1.8);
-            profile.scale.setScalar(1.4);
-            profile.rotation.set(-.05, -.46, 0);
-            scene.add(profile);
-
             // ---- sonar pulse ring ----
             const sonar = new THREE.Mesh(
                 new THREE.RingGeometry(.97, 1, 56),
@@ -1958,7 +1914,6 @@
                 sweepMat.color.setHex(p.acc);
                 sonar.material.color.setHex(p.acc);
                 rim.color.setHex(p.acc);
-                profileGlow.material.color.setHex(p.acc);
                 floaters[0].material.color.setHex(p.acc2);
                 floaters[1].material.color.setHex(p.acc);
             }
@@ -1972,10 +1927,6 @@
                 robot.position.x = isWide ? 1.9 : 0;
                 robot.position.z = isWide ? 0 : -1.2;
                 robot.scale.setScalar(isWide ? 1 : .74);
-                profile.position.x = isWide ? 3.35 : 0;
-                profile.position.z = isWide ? -1.8 : -2.25;
-                profile.scale.setScalar(isWide ? 1.4 : .74);
-                profile.visible = isWide;
             }
             layout();
 
@@ -2043,9 +1994,6 @@
                 // robot rotation (auto + drag inertia)
                 rotVel += (rotTarget - rotVel) * .12;
                 robot.rotation.y = t * .22 + rotVel;
-                profile.position.y = 2.35 + Math.sin(t * .75) * .14;
-                profile.rotation.x = -.05 + Math.sin(t * .48) * .025;
-                profile.rotation.y = -.46 + Math.sin(t * .36) * .12;
 
                 for (const w of wheels) w.rotation.y -= .045;
                 sweep1.rotation.z = -t * 2.6;
